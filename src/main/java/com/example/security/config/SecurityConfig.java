@@ -28,23 +28,25 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
-                .formLogin(login -> login
-                        .loginPage("/loginPage")
-                        .loginProcessingUrl("/loginProc")
-                        .defaultSuccessUrl("/", true) //핸들러 옵션이 있으면 핸들러가 우선
-                        .failureUrl("/failed") //핸들러 옵션이 있으면 핸들러가 우선
-                        .usernameParameter("userId")
-                        .passwordParameter("pwd")
-                        .successHandler((request, response, authentication) -> {
-                            System.out.println("authentication : " + authentication);
-                            response.sendRedirect("/home");
-                        })
-                        .failureHandler((request, response, exception) -> {
-                            System.out.println("exception : " + exception.getMessage());
-                            response.sendRedirect("/login");
-                        })
-                        .permitAll()
-                );
+//                .formLogin(login -> login
+//                        .loginPage("/loginPage")
+//                        .loginProcessingUrl("/loginProc")
+//                        .defaultSuccessUrl("/", true) //핸들러 옵션이 있으면 핸들러가 우선
+//                        .failureUrl("/failed") //핸들러 옵션이 있으면 핸들러가 우선
+//                        .usernameParameter("userId")
+//                        .passwordParameter("pwd")
+//                        .successHandler((request, response, authentication) -> {
+//                            System.out.println("authentication : " + authentication);
+//                            response.sendRedirect("/home");
+//                        })
+//                        .failureHandler((request, response, exception) -> {
+//                            System.out.println("exception : " + exception.getMessage());
+//                            response.sendRedirect("/login");
+//                        })
+//                        .permitAll()
+//                )
+                .httpBasic(basic -> basic
+                        .authenticationEntryPoint(new CustomAuthenticationEntryPoint()));
 
         return http.build();
     }
