@@ -17,6 +17,7 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import java.io.IOException;
 
@@ -27,7 +28,11 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/anonymous").hasRole("GUEST")
+                        .requestMatchers("/anonymousContext", "/authentication").permitAll()
+                        .anyRequest().authenticated())
+                .formLogin(Customizer.withDefaults())
 //                .formLogin(login -> login
 //                        .loginPage("/loginPage")
 //                        .loginProcessingUrl("/loginProc")
@@ -45,9 +50,28 @@ public class SecurityConfig {
 //                        })
 //                        .permitAll()
 //                )
-                .httpBasic(basic -> basic
-                        .authenticationEntryPoint(new CustomAuthenticationEntryPoint()));
-
+//                .httpBasic(basic -> basic
+//                        .authenticationEntryPoint(new CustomAuthenticationEntryPoint()))
+//                .rememberMe(rememberMe -> rememberMe
+//                        .alwaysRemember(true)
+//                        .tokenValiditySeconds(3600)
+//                        .userDetailsService(userDetailsService())
+//                        .rememberMeParameter("remember")
+//                        .rememberMeCookieName("remember")
+//                        .key("security"))
+                .anonymous(anonymous -> anonymous
+                        .principal("guest")
+                        .authorities("ROLE_GUEST")
+                )
+                .logout(logout -> logout
+                        /**
+                         * 아래 두개 같이있을땐 logoutRequestMatcher가 우선권을 가진다
+                         * "POST"가 생략되었을 경우에는 CSRF 기능을 비활성ㅇ화 한 것처럼 모든 http method 에 동작한다.
+                         */
+                        .logoutUrl("/logoutProc")
+                        .logoutRequestMatcher(new AntPathRequestMatcher("/logoutProc", "POST"))
+                )
+        ;
         return http.build();
     }
 
