@@ -33,44 +33,6 @@ public class SecurityConfig {
                         .requestMatchers("/anonymousContext", "/authentication").permitAll()
                         .anyRequest().authenticated())
                 .formLogin(Customizer.withDefaults())
-//                .formLogin(login -> login
-//                        .loginPage("/loginPage")
-//                        .loginProcessingUrl("/loginProc")
-//                        .defaultSuccessUrl("/", true) //핸들러 옵션이 있으면 핸들러가 우선
-//                        .failureUrl("/failed") //핸들러 옵션이 있으면 핸들러가 우선
-//                        .usernameParameter("userId")
-//                        .passwordParameter("pwd")
-//                        .successHandler((request, response, authentication) -> {
-//                            System.out.println("authentication : " + authentication);
-//                            response.sendRedirect("/home");
-//                        })
-//                        .failureHandler((request, response, exception) -> {
-//                            System.out.println("exception : " + exception.getMessage());
-//                            response.sendRedirect("/login");
-//                        })
-//                        .permitAll()
-//                )
-//                .httpBasic(basic -> basic
-//                        .authenticationEntryPoint(new CustomAuthenticationEntryPoint()))
-//                .rememberMe(rememberMe -> rememberMe
-//                        .alwaysRemember(true)
-//                        .tokenValiditySeconds(3600)
-//                        .userDetailsService(userDetailsService())
-//                        .rememberMeParameter("remember")
-//                        .rememberMeCookieName("remember")
-//                        .key("security"))
-                .anonymous(anonymous -> anonymous
-                        .principal("guest")
-                        .authorities("ROLE_GUEST")
-                )
-                .logout(logout -> logout
-                        /**
-                         * 아래 두개 같이있을땐 logoutRequestMatcher가 우선권을 가진다
-                         * "POST"가 생략되었을 경우에는 CSRF 기능을 비활성ㅇ화 한 것처럼 모든 http method 에 동작한다.
-                         */
-                        .logoutUrl("/logoutProc")
-                        .logoutRequestMatcher(new AntPathRequestMatcher("/logoutProc", "POST"))
-                )
         ;
         return http.build();
     }
