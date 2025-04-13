@@ -19,10 +19,8 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/anonymous").hasRole("GUEST")
-                        .requestMatchers("/anonymousContext", "/authentication").permitAll()
+                        .requestMatchers("/").permitAll()
                         .anyRequest().authenticated())
-                .formLogin(Customizer.withDefaults())
         ;
         return http.build();
     }
