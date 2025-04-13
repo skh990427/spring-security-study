@@ -19,22 +19,28 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/").permitAll()
+//                        .requestMatchers("/").permitAll()
                         .anyRequest().authenticated())
+                .formLogin(Customizer.withDefaults())
         ;
         return http.build();
+    }
+
+    @Bean
+    public UserDetailsService userDetailsService() {
+        return new CustomUserDetailsService();
     }
 
     /**
      * 스프링 시큐리티 사용자 추가 방법2 - 자바 파일에 빈으로 등록
      * 프로퍼티랑 같이 있으면 얘가 우선순위를 가진다
      */
-    @Bean
-    public UserDetailsService userDetailsService() {
-        UserDetails user = User.withUsername("user")
-                .password("{noop}1111")
-                .authorities("USER")
-                .build();
-        return new InMemoryUserDetailsManager(user);
-    }
+//    @Bean
+//    public UserDetailsService userDetailsService() {
+//        UserDetails user = User.withUsername("user")
+//                .password("{noop}1111")
+//                .authorities("USER")
+//                .build();
+//        return new InMemoryUserDetailsManager(user);
+//    }
 }
