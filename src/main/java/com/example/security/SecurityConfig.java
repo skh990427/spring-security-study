@@ -1,4 +1,4 @@
-package com.example.security.config;
+package com.example.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,8 +19,8 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/").permitAll()
                         .anyRequest().authenticated())
+                .formLogin(Customizer.withDefaults())
         ;
         return http.build();
     }
