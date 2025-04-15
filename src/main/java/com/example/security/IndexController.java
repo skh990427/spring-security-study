@@ -33,4 +33,9 @@ public class IndexController {
             return "not anonymous";
         }
     }
+
+    @GetMapping("/expiredUrl")
+    public String expiredSessionUrl() {
+        return "expiredSessionUrl";
+    }
 }

@@ -19,9 +19,17 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/expiredUrl").permitAll()
                         .anyRequest().authenticated())
                 .formLogin(Customizer.withDefaults())
+                .sessionManagement(session -> session
+                        .maximumSessions(1)
+                        .maxSessionsPreventsLogin(false) // true - 초과인증 차단 // false - 이전 사용자 인증 만료
+                        .expiredUrl("/expiredUrl")
+//                        .invalidSessionUrl("/invalidSessionUrl")
+                )
         ;
+
         return http.build();
     }
 
