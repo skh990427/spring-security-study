@@ -23,13 +23,12 @@ public class SecurityConfig {
                         .anyRequest().authenticated())
                 .formLogin(Customizer.withDefaults())
                 .sessionManagement(session -> session
-                        .maximumSessions(1)
-                        .maxSessionsPreventsLogin(false) // true - 초과인증 차단 // false - 이전 사용자 인증 만료
-                        .expiredUrl("/expiredUrl")
-//                        .invalidSessionUrl("/invalidSessionUrl")
+                        .sessionFixation(sessionFixation -> sessionFixation.changeSessionId())
+//                        .sessionFixation(sessionFixation -> sessionFixation.migrateSession())
+//                        .sessionFixation(sessionFixation -> sessionFixation.newSession())
+//                        .sessionFixation(sessionFixation -> sessionFixation.none())
                 )
         ;
-
         return http.build();
     }
 
