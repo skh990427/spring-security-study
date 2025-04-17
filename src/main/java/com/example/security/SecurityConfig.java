@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -21,6 +22,16 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .anyRequest().authenticated())
                 .formLogin(Customizer.withDefaults())
+                .sessionManagement(session -> session
+                                //필요할 경우에 세션 생성
+//                                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                                // 항상 세션을 생성
+//                              .sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
+//                              .sessionCreationPolicy(SessionCreationPolicy.NEVER)
+                                // 세션을 생성도 안하고 세션을 사용하지도 않음
+                                // JWT 같은 stateless 인증구조일때 사용
+                              .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
         ;
         return http.build();
     }
