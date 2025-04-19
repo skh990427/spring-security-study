@@ -33,4 +33,14 @@ public class IndexController {
             return "not anonymous";
         }
     }
+
+    @GetMapping("/login")
+    public String login() {
+        return "loginPage";
+    }
+
+    @GetMapping("/denied")
+    public String denied() {
+        return "denied";
+    }
 }
