@@ -5,32 +5,39 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.CurrentSecurityContext;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class IndexController {
 
     @GetMapping("/")
-    public Authentication index(Authentication authentication) {
-        return authentication;
+    public String index(){
+        return "index";
     }
 
-    @GetMapping("/anonymous")
-    public String anonymous() {
-        return "anonymous";
+    @GetMapping("/user")
+    public String user(){
+        return "user";
     }
 
-    @GetMapping("/anonymousContext")
-    public String anonymousContext(@CurrentSecurityContext SecurityContext context) {
-        return context.getAuthentication().getName();
+    @GetMapping("/user/{name}")
+    public String userName(@PathVariable(value = "name") String name){
+        return name;
     }
 
-    @GetMapping("/authentication")
-    public String authentication(Authentication authentication) {
-        if (authentication instanceof AnonymousAuthenticationToken) {
-            return "anonymous";
-        } else {
-            return "not anonymous";
-        }
+    @GetMapping("/admin/db")
+    public String admin(){
+        return "admin";
+    }
+
+    @GetMapping("/api/photos")
+    public String photos(){
+        return "photos";
+    }
+
+    @GetMapping("/oauth/login")
+    public String oauth(){
+        return "oauthLogin";
     }
 }
