@@ -1,5 +1,6 @@
 package com.example.security;
 
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -10,31 +11,69 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.expression.DefaultHttpSecurityExpressionHandler;
+import org.springframework.security.web.access.expression.WebExpressionAuthorizationManager;
 
 @EnableWebSecurity
 @Configuration
 public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, ApplicationContext context) throws Exception {
+
         http
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(new CustomRequestMatcher("/admin")).hasAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated())
                 .formLogin(Customizer.withDefaults())
         ;
         return http.build();
     }
 
+    /*@Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, ApplicationContext context) throws Exception {
+
+        DefaultHttpSecurityExpressionHandler expressionHandler = new DefaultHttpSecurityExpressionHandler();
+        expressionHandler.setApplicationContext(context);
+
+        WebExpressionAuthorizationManager authorizationManager
+                = new WebExpressionAuthorizationManager("@customWebSecurity.check(authentication, request)");
+        authorizationManager.setExpressionHandler(expressionHandler);
+
+        http
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/custom/**").access(authorizationManager)
+                        .anyRequest().authenticated())
+                .formLogin(Customizer.withDefaults())
+        ;
+        return http.build();
+    }*/
+
+//    @Bean
+//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//        http
+//                .authorizeHttpRequests(auth -> auth
+//                        .requestMatchers("/user/{name}")
+//                        .access(new WebExpressionAuthorizationManager("#name == authentication.name"))
+//
+//                        .requestMatchers("/admin/db")
+//                        .access(new WebExpressionAuthorizationManager("hasAuthority('ROLE_DB') or hasAuthority('ROLE_ADMIN')"))
+//
+//                        .anyRequest().authenticated())
+//                .formLogin(Customizer.withDefaults())
+//        ;
+//        return http.build();
+//    }
+
     /**
      * 스프링 시큐리티 사용자 추가 방법2 - 자바 파일에 빈으로 등록
      * 프로퍼티랑 같이 있으면 얘가 우선순위를 가진다
      */
     @Bean
-    public UserDetailsService userDetailsService() {
-        UserDetails user = User.withUsername("user")
-                .password("{noop}1111")
-                .authorities("USER")
-                .build();
-        return new InMemoryUserDetailsManager(user);
+    public UserDetailsService userDetailsService(){
+        UserDetails user = User.withUsername("user").password("{noop}1111").roles("USER").build();
+        UserDetails db = User.withUsername("db").password("{noop}1111").roles("DB").build();
+        UserDetails admin = User.withUsername("admin").password("{noop}1111").roles("ADMIN","SECURE").build();
+        return  new InMemoryUserDetailsManager(user, db, admin);
     }
 }
