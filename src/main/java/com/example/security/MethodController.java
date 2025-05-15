@@ -1,47 +1,36 @@
 package com.example.security;
 
-import org.springframework.security.access.prepost.PostAuthorize;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
+@RequiredArgsConstructor
 public class MethodController {
 
-    @GetMapping("/admin")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public String admin() {
-        return "admin";
+    private final DataService dataService;
+
+    @PostMapping("/writeList")
+    public List<Account> writeList(@RequestBody List<Account> data) {
+        return dataService.writeList(data);
     }
 
-    @GetMapping("/user")
-    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
-    public String user() {
-        return "user";
+    @PostMapping("/writeMap")
+    public Map<String, Account> writeMap(@RequestBody List<Account> data) {
+        Map<String, Account> accountMap = data.stream().collect(Collectors.toMap(account -> account.getOwner(), account -> account));
+        return dataService.writeMap(accountMap);
     }
 
-    @GetMapping("/isAuthenticated")
-    @PreAuthorize("isAuthenticated()")
-    public String isAuthenticated() {
-        return "isAuthenticated";
+    @GetMapping("/readList")
+    public List<Account> readList() {
+        return dataService.readList();
     }
 
-    @GetMapping("/user/{id}")
-    @PreAuthorize("#id == authentication.name")
-    public String authentication(@PathVariable(name = "id") String id) {
-        return id;
-    }
-
-    @GetMapping("/owner")
-    @PostAuthorize("returnObject.owner == authentication.name")
-    public Account owner(String name) {
-        return new Account(name, false);
-    }
-
-    @GetMapping("/isSecure")
-    @PostAuthorize("hasAuthority('ROLE_ADMIN') and returnObject.isSecure")
-    public Account isSecure(String name, String secure) {
-        return new Account(name, "Y".equals(secure));
+    @GetMapping("/readMap")
+    public Map<String, Account> readMap() {
+        return dataService.readMap();
     }
 }
