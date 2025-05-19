@@ -2,10 +2,13 @@ package com.example.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.core.GrantedAuthorityDefaults;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -20,11 +23,19 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/user").hasRole("USER")
+                        .requestMatchers("/db").hasRole("DB")
+                        .requestMatchers("/admin").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .formLogin(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
         ;
         return http.build();
+    }
+
+    @Bean
+    public GrantedAuthorityDefaults grantedAuthorityDefaults() { // hasRole() 메서드만 적용됨 그래서 아래 디테일 생성할떄 .roles()사용하지 말고, .authorities(MYPREFIX_USER) 이렇게 선언해야함
+        return new GrantedAuthorityDefaults("MYPREFIX_");
     }
 
     /**
