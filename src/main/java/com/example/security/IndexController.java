@@ -10,6 +10,7 @@ public class IndexController {
     public String index(){
         return "index";
     }
+
     @GetMapping("/user")
     public String user(){
         return "user";
@@ -23,5 +24,10 @@ public class IndexController {
     @GetMapping("/admin")
     public String admin(){
         return "admin";
+    }
+
+    @GetMapping("/secure")
+    public String secure(){
+        return "secure";
     }
 }
