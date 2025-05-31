@@ -6,6 +6,7 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -19,17 +20,17 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .authorizeHttpRequests(auth -> auth
-                        .anyRequest().authenticated())
-                .formLogin(Customizer.withDefaults())
-                .csrf(AbstractHttpConfigurer::disable)
+            .authorizeHttpRequests(auth -> auth
+                .anyRequest().authenticated())
+            .formLogin(Customizer.withDefaults())
+            .csrf(AbstractHttpConfigurer::disable)
         ;
+        SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
         return http.build();
     }
 
     /**
-     * 스프링 시큐리티 사용자 추가 방법2 - 자바 파일에 빈으로 등록
-     * 프로퍼티랑 같이 있으면 얘가 우선순위를 가진다
+     * 스프링 시큐리티 사용자 추가 방법2 - 자바 파일에 빈으로 등록 프로퍼티랑 같이 있으면 얘가 우선순위를 가진다
      */
     @Bean
     public UserDetailsService userDetailsService() {
