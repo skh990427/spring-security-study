@@ -2,16 +2,18 @@ package io.security.springsecurityservice.domain.dto;
 
 import java.util.Collection;
 import java.util.List;
+import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+@Data
 public class AccountContext implements UserDetails {
 
-    private final AccountDto account;
+    private final AccountDto accountDto;
     private final List<GrantedAuthority> authorities;
 
     public AccountContext(AccountDto account, List<GrantedAuthority> authorities) {
-        this.account = account;
+        this.accountDto = account;
         this.authorities = authorities;
     }
 
@@ -22,12 +24,12 @@ public class AccountContext implements UserDetails {
 
     @Override
     public String getPassword() {
-        return account.getPassword();
+        return accountDto.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return account.getUsername();
+        return accountDto.getUsername();
     }
 
     @Override
