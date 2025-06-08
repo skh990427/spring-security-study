@@ -1,9 +1,11 @@
 package io.security.springsecurityservice.security.config;
 
+import io.security.springsecurityservice.security.entrypoint.RestAuthenticationEntryPoint;
 import io.security.springsecurityservice.security.filter.RestAuthenticationFilter;
 import io.security.springsecurityservice.security.handler.FormAccessDeniedHandler;
 import io.security.springsecurityservice.security.handler.FormAuthenticationFailureHandler;
 import io.security.springsecurityservice.security.handler.FormAuthenticationSuccessHandler;
+import io.security.springsecurityservice.security.handler.RestAccessDeniedHandler;
 import io.security.springsecurityservice.security.handler.RestAuthenticationFailureHandler;
 import io.security.springsecurityservice.security.handler.RestAuthenticationSuccessHandler;
 import jakarta.servlet.http.HttpServletRequest;
@@ -70,11 +72,18 @@ public class SecurityConfig {
             .securityMatcher("/api/**")
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/css/**", "/images/**", "/js/**", "/favicon.*", "/*/icon-*").permitAll()
-                .anyRequest().permitAll())
+                .requestMatchers("/api", "/api/login").permitAll()
+                .requestMatchers("/api/user").hasAuthority("ROLE_USER")
+                .requestMatchers("/api/manager").hasAuthority("ROLE_MANAGER")
+                .requestMatchers("/api/admin").hasAuthority("ROLE_ADMIN")
+                .anyRequest().authenticated())
             .csrf(AbstractHttpConfigurer::disable)
             .addFilterBefore(restAuthenticationFilter(http, authenticationManager),
                              UsernamePasswordAuthenticationFilter.class)
             .authenticationManager(authenticationManager)
+            .exceptionHandling(exception -> exception
+                .authenticationEntryPoint(new RestAuthenticationEntryPoint())
+                .accessDeniedHandler(new RestAccessDeniedHandler()))
         ;
         return http.build();
     }
